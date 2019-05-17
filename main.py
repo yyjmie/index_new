@@ -4,16 +4,22 @@ import pandas as pd
 import json_to_csv as j
 import data_analyse as d
 import draw
+import arrow
 
-# 设置需要的列
-last_month = '2019/3/1'
-same_month = '2018/4/1'
-this_month = '2019/4/1'
+# 
 file_name_sale = "data_2019_04_sale.json"
 file_name_rent = "data_2019_04_rent.json"
+
+y_m = arrow.get(file_name_sale, 'YYYY_MM')
+this_month = y_m.format('YYYY/MM')
+last_month = y_m.shift(months=-1).format('YYYY/MM')
+same_month = y_m.shift(years=-1).format('YYYY/MM')
+
+
 last_month_index = 424.23
 same_month_index = 344.82
 
+#
 j.json_to_csv(file_name_sale, "mid_sale.csv", this_month)
 j.json_to_csv(file_name_rent, "mid_rent.csv", this_month)
 j.preprocess("mid_sale.csv", "sale.csv", this_month)

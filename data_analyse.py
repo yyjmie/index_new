@@ -1,10 +1,9 @@
-# -*- coding: UTF-8 -*-
 import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
 
 def save_table(old_file, new_file, this_month):
-    # 新数据与原表合并
+    
     df = pd.read_csv(old_file)
 
     if this_month not in df.columns:
@@ -12,56 +11,34 @@ def save_table(old_file, new_file, this_month):
         result = pd.merge(df ,df2, on='city')
         result.to_csv(old_file, index=False)
 
-def city_name_preprocess(file_name, to_file_name, this_month):
-    data = pd.read_csv(file_name)
-    data.rename(columns={"城市": "city", "均价": this_month}, inplace=True)
 
-    for i in range(len(data)):
-        if data.iat[i,0][-1] == '市':
-            data.iat[i,0] = data.iat[i,0][0:-1]
-
-    data.to_csv(to_file_name, index=False)
 
 def sale_calculate(last_month, same_month, this_month):
-    # 新数据与原表合并
-    df = pd.read_csv('286sale.csv', usecols=['city', same_month, last_month])
-    df2 = pd.read_csv('sale.csv')
-
-    result = pd.merge(df ,df2, on='city')
+    
+    df = pd.read_csv('286sale.csv', usecols=['city', same_month, last_month, this_month])
 
     # 计算同比和环比
-    result['y_on_y'] = (result[this_month]-result[same_month]) / result[same_month]
-    result['m_on_m'] = (result[this_month]-result[last_month]) / result[last_month]
+    df['y_on_y'] = (df[this_month]-df[same_month]) / df[same_month]
+    df['m_on_m'] = (df[this_month]-df[last_month]) / df[last_month]
 
     # 得到同比和环比上涨数量和涨幅
-    result_y_up = result[result.y_on_y>=0]['y_on_y']
-    result_m_up = result[result.m_on_m>=0]['m_on_m']
-    y_on_y_up_num = len(result_y_up)
-    m_on_m_up_num = len(result_m_up)
-    y_on_y_up_rate = result_y_up.mean()
-    m_on_m_up_rate = result_m_up.mean()
-    print("同比上涨数量: " + str(y_on_y_up_num))
-    print("环比上涨数量: " + str(m_on_m_up_num))
+    y_up = df[df.y_on_y>=0]['y_on_y']
+    m_up = df[df.m_on_m>=0]['m_on_m']
+    y_on_y_up_num = len(y_up)
+    m_on_m_up_num = len(m_up)
+    y_on_y_up_rate = y_up.mean()
+    m_on_m_up_rate = m_up.mean()
 
-    print("同比平均涨幅:" + str(y_on_y_up_rate))
-    print("环比平均涨幅:" + str(m_on_m_up_rate))
-
-
-    result_y_down = result[result.y_on_y<0]['y_on_y']
-    result_m_down = result[result.m_on_m<0]['m_on_m']
-    y_on_y_down_num = len(result_y_down)
-    m_on_m_down_num = len(result_m_down)
-    y_on_y_down_rate = result_y_down.mean()
-    m_on_m_down_rate = result_m_down.mean()
-    print("同比下降数量: " + str(y_on_y_down_num))
-    print("环比下降数量: " + str(m_on_m_down_num))
-
-    print("同比平均降幅:" + str(y_on_y_down_rate))
-    print("环比平均降幅:" + str(m_on_m_down_rate))
+    y_down = df[df.y_on_y<0]['y_on_y']
+    m_down = df[df.m_on_m<0]['m_on_m']
+    y_on_y_down_num = len(y_down)
+    m_on_m_down_num = len(m_down)
+    y_on_y_down_rate = y_down.mean()
+    m_on_m_down_rate = m_down.mean()
 
     # 保存
     o = pd.read_csv("sale_change.csv")
-    if(o.iat[-1, 0]!=this_month):
+    if(this_month not in o.日期):
         s = pd.DataFrame({"日期": this_month,
                         "环比上涨数": m_on_m_up_num,
                         "环比涨幅": m_on_m_up_rate,
@@ -76,8 +53,9 @@ def sale_calculate(last_month, same_month, this_month):
         o = o.append(s, ignore_index=True)
         o.to_csv("sale_change.csv", index=False)
 
-# 计算投资收益指数
+
 def index_calculate(last_month, same_month, this_month, last_month_index, same_month_index):
+    
     # 指数表
     df = pd.read_csv("286index.csv", usecols=['city', last_month,same_month])
 
@@ -109,10 +87,8 @@ def index_calculate(last_month, same_month, this_month, last_month_index, same_m
     top10.y_on_y = top10.y_on_y.apply(lambda x: '{:.2%}'.format(x))
     bottom10 = sorted.tail(10)
     bottom10.y_on_y = bottom10.y_on_y.apply(lambda x: '{:.2%}'.format(x))
-    print("top 10:")
-    print(top10)
-    print("bottom 10:")
-    print(bottom10)
+    
+    # save
     top10.to_csv("r_top10.csv", index=False)
     bottom10.sort_values(by='y_on_y', ascending=False).to_csv("r_bottom10.csv", index=False)
 
@@ -120,13 +96,9 @@ def index_calculate(last_month, same_month, this_month, last_month_index, same_m
     rate_mean = np.mean(sorted['y_on_y'])
 
     first_tier = sorted[sorted['city'].isin(['北京', '上海', '广州', '深圳'])]
-    print('一线城市:')
-    print(first_tier)
     new_first_tier = sorted[sorted['city'].isin(['成都', '杭州', '重庆', '武汉', '苏州', '西安',
                                                  '天津', '南京', '郑州', '长沙', '沈阳', '青岛',
                                                  '宁波', '东莞', '无锡'])]
-    print('新一线城市:')
-    print(new_first_tier)
 
     plt.style.use('fivethirtyeight')
     fig, ax = plt.subplots()
@@ -156,7 +128,3 @@ def index_calculate(last_month, same_month, this_month, last_month_index, same_m
     print(index/last_month_index-1)
     print("y_on_y: ")
     print(index/same_month_index-1)
-
-def city_index(this_month):
-    df = pd.read_csv('286index.csv')
-    sorted = df.sort_values(by=this_month, ascending=false)
