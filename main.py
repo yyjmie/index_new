@@ -1,21 +1,23 @@
 # -*- coding: UTF-8 -*-
 import pandas as pd
 
+import json_to_csv as j
 import data_analyse as d
 import draw
 
 # 设置需要的列
-last_month = '2019/1/1'
-same_month = '2018/2/1'
-this_month = '2019/2/1'
-file_name_sale = "data_2019_02_sale.csv"
-file_name_rent = "data_2019_02_rent.csv"
-last_month_index = 438.16
-same_month_index = 340.18
+last_month = '2019/3/1'
+same_month = '2018/4/1'
+this_month = '2019/4/1'
+file_name_sale = "data_2019_04_sale.json"
+file_name_rent = "data_2019_04_rent.json"
+last_month_index = 424.23
+same_month_index = 344.82
 
-# 处理城市名,去掉"市"字,以与大表按城市名合并
-d.city_name_preprocess(file_name_sale, "sale.csv", this_month)
-d.city_name_preprocess(file_name_rent, "rent.csv", this_month)
+j.json_to_csv(file_name_sale, "mid_sale.csv", this_month)
+j.json_to_csv(file_name_rent, "mid_rent.csv", this_month)
+j.preprocess("mid_sale.csv", "sale.csv", this_month)
+j.preprocess("mid_rent.csv", "rent.csv", this_month)
 
 # 新sale表合并过来并保存
 d.save_table("286sale.csv", "sale.csv", this_month)

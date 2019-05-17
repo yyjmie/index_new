@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import pandas as pd
 from matplotlib import rcParams
-font_name = 'FZZJ-ZJJYBKTJW'
+font_name = 'FZXiHeiI-Z08S'
 rcParams['font.sans-serif'] = [font_name]
 rcParams['font.family'] = 'sans-serif'
 from matplotlib import pyplot as plt
@@ -19,7 +19,7 @@ def draw():
     ax.plot(df["日期"].values, df["同比上涨数"].values, label="同比上涨数")
     labels = ax.get_xticklabels()
     plt.setp(labels, rotation=45, horizontalalignment='right')
-    ax.set(ylim=[50,300], xlabel='', ylabel='城市数', title='近六个月住宅均价上涨城市数')
+    ax.set(ylim=[50,300], xlabel='', ylabel='城市数', title='近七个月住宅均价上涨城市数')
     ax.legend()
     fig.savefig('r_city_num.png', transparent=False, dpi=80, bbox_inches="tight")
 
@@ -30,7 +30,7 @@ def draw():
     labels = ax2.get_xticklabels()
     plt.setp(labels, rotation=45, horizontalalignment='right')
     ax2.axhline(0, ls='--', color='r', linewidth=1.5)
-    ax2.set(ylim=[-0.06, 0.2], xlabel='', ylabel='涨幅', title='近六个月住宅均价涨幅')
+    ax2.set(ylim=[-0.06, 0.2], xlabel='', ylabel='涨幅', title='近七个月住宅均价涨幅')
     ax2.legend()
     fig2.savefig('r_city_up.png', transparent=False, dpi=80, bbox_inches="tight")
 
@@ -44,7 +44,7 @@ def draw():
     plt.setp(autotexts, size=20)
     plt.setp(texts, size=16)
     ax3.axis('equal')
-    ax3.set_title("19年2月百城住宅环比涨跌对比")
+    ax3.set_title("19年3月百城住宅环比涨跌对比")
     fig3.savefig('r_pie1.png', transparent=False, dpi=80, bbox_inches="tight")
 
     sizes = [df.iat[-1, 1],df.iat[-1, 5]]
@@ -55,7 +55,7 @@ def draw():
     plt.setp(autotexts2, size=20)
     plt.setp(texts, size=16)
     ax4.axis('equal')
-    ax4.set_title("19年2月百城住宅同比涨跌对比")
+    ax4.set_title("19年3月百城住宅同比涨跌对比")
     fig4.savefig('r_pie2.png', transparent=False, dpi=80, bbox_inches="tight")
 
 
