@@ -12,7 +12,6 @@ def save_table(old_file, new_file, this_month):
         result.to_csv(old_file, index=False)
 
 
-
 def sale_calculate(last_month, same_month, this_month):
     
     df = pd.read_csv('286sale.csv', usecols=['city', same_month, last_month, this_month])
@@ -37,24 +36,13 @@ def sale_calculate(last_month, same_month, this_month):
     m_on_m_down_rate = m_down.mean()
 
     # 保存
-    o = pd.read_csv("sale_change.csv")
-    if(this_month not in o.日期):
-        s = pd.DataFrame({"日期": this_month,
-                        "环比上涨数": m_on_m_up_num,
-                        "环比涨幅": m_on_m_up_rate,
-                        "同比上涨数": y_on_y_up_num,
-                        "同比涨幅": y_on_y_up_rate,
-                        "环比下跌": m_on_m_down_num,
-                        "环比跌幅": m_on_m_down_rate,
-                        "同比下跌": y_on_y_down_num,
-                        "同比跌幅": y_on_y_down_rate},
-                        index=[0])
-
-        o = o.append(s, ignore_index=True)
-        o.to_csv("sale_change.csv", index=False)
+    o = pd.read_csv("sale_change.csv", index_col=['日期'])
+    o.loc[this_month] = [m_on_m_up_num, '%.4f'%m_on_m_up_rate, y_on_y_up_num, '%.4f'%y_on_y_up_rate, 
+                         m_on_m_down_num, '%.4f'%m_on_m_down_rate, y_on_y_down_num, '%.4f'%y_on_y_down_rate]
+    o.to_csv("sale_change.csv")
 
 
-def index_calculate(last_month, same_month, this_month, last_month_index, same_month_index):
+def index_calculate(last_month, same_month, this_month):
     
     # 指数表
     df = pd.read_csv("286index.csv", usecols=['city', last_month,same_month])
@@ -89,42 +77,25 @@ def index_calculate(last_month, same_month, this_month, last_month_index, same_m
     bottom10.y_on_y = bottom10.y_on_y.apply(lambda x: '{:.2%}'.format(x))
     
     # save
+    sorted.to_csv("rate_new.csv", index=False)
     top10.to_csv("r_top10.csv", index=False)
     bottom10.sort_values(by='y_on_y', ascending=False).to_csv("r_bottom10.csv", index=False)
 
-    # 一线城市与新一线城市做图
-    rate_mean = np.mean(sorted['y_on_y'])
-
-    first_tier = sorted[sorted['city'].isin(['北京', '上海', '广州', '深圳'])]
-    new_first_tier = sorted[sorted['city'].isin(['成都', '杭州', '重庆', '武汉', '苏州', '西安',
-                                                 '天津', '南京', '郑州', '长沙', '沈阳', '青岛',
-                                                 '宁波', '东莞', '无锡'])]
-
-    plt.style.use('fivethirtyeight')
-    fig, ax = plt.subplots()
-    ax.bar(new_first_tier['city'].values, new_first_tier['y_on_y'].values)
-    labels = ax.get_xticklabels()
-    plt.setp(labels, rotation=45, horizontalalignment='right')
-    ax.axhline(rate_mean, ls='--', color='r')
-    ax.text(9, rate_mean+0.05, '286城收益率均值')
-    ax.set(ylim=[-0.1, 1], xlabel='', ylabel='投资收益率', title='新一线城市投资收益率')
-    fig.savefig('new_first_tier.png', transparent=False, dpi=80, bbox_inches="tight")
-
-    fig2, ax2 = plt.subplots()
-    ax2.bar(first_tier['city'].values, first_tier['y_on_y'].values)
-    labels = ax2.get_xticklabels()
-    plt.setp(labels, rotation=45, horizontalalignment='right')
-    ax2.axhline(rate_mean, ls='--', color='r')
-    ax2.text(2, rate_mean + 0.05, '286城收益率均值')
-    ax2.set(ylim=[-0.1, 1], xlabel='', ylabel='投资收益率', title='一线城市投资收益率')
-    fig2.savefig('first_tier.png', transparent=False, dpi=80, bbox_inches="tight")
-
    # 计算百城投资收益指数
+    df_index = pd.read_csv('index_change.csv',index_col=['date'])
+    last_month_index = df_index.at[last_month,'index']
+    same_month_index = df_index.at[same_month,'index']
+
     rate = (result[this_month]/result[last_month]).mean()
     index = last_month_index*rate
+
+    df_index.loc[this_month] = '%.2f'%index
+    df_index.to_csv('index_change.csv')
+
     print("index: ")
     print(index)
     print("m_on_m: ")
     print(index/last_month_index-1)
     print("y_on_y: ")
     print(index/same_month_index-1)
+
