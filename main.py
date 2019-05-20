@@ -2,8 +2,8 @@
 import pandas as pd
 
 import preprocess as p
-import data_analyse as d
-import draw
+import data_analyse as a
+import draw as d
 import arrow
 
 # 全剧变量（文件名和日期）
@@ -22,16 +22,19 @@ p.preprocess("mid_sale.csv", "sale.csv", this_month)
 p.preprocess("mid_rent.csv", "rent.csv", this_month)
 
 # 新sale表合并过来并保存
-d.save_table("286sale.csv", "sale.csv", this_month)
+a.save_table("286sale.csv", "sale.csv", this_month)
 
 # 计算286sale同比和环比
-d.sale_calculate(last_month, same_month, this_month)
+a.sale_calculate(last_month, same_month, this_month)
 
 # 计算百城投资收益指数
-d.index_calculate(last_month, same_month, this_month)
+a.index_calculate(last_month, same_month, this_month)
 
 # 新index表合并过来保存
-d.save_table('286index.csv', 'index_new.csv', this_month)
+a.save_table('286index.csv', 'index_new.csv', this_month)
 
 # 绘图
-draw.draw()
+d.line()
+d.pie(this_month)
+d.bar()
+
