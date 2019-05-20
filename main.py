@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import pandas as pd
 
-import json_to_csv as j
+import preprocess as p
 import data_analyse as d
 import draw
 import arrow
@@ -16,10 +16,10 @@ last_month = y_m.shift(months=-1).format('YYYY/MM')
 same_month = y_m.shift(years=-1).format('YYYY/MM')
 
 # 
-j.json_to_csv(file_name_sale, "mid_sale.csv", this_month)
-j.json_to_csv(file_name_rent, "mid_rent.csv", this_month)
-j.preprocess("mid_sale.csv", "sale.csv", this_month)
-j.preprocess("mid_rent.csv", "rent.csv", this_month)
+p.json_to_csv(file_name_sale, "mid_sale.csv", this_month)
+p.json_to_csv(file_name_rent, "mid_rent.csv", this_month)
+p.preprocess("mid_sale.csv", "sale.csv", this_month)
+p.preprocess("mid_rent.csv", "rent.csv", this_month)
 
 # 新sale表合并过来并保存
 d.save_table("286sale.csv", "sale.csv", this_month)
