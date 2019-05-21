@@ -37,4 +37,5 @@ a.save_table('286index.csv', 'index_new.csv', this_month)
 d.line()
 d.pie(this_month)
 d.bar()
+d.map(this_month)
 
