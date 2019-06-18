@@ -117,7 +117,6 @@ def bar():
 
 def map(this_month):
 
-    this_month = '2019/04'
     df1 = pd.read_csv('mid_sale.csv',usecols=['city','num',this_month],na_values='na')
     df2 = pd.read_csv('province_city.csv')
     df = pd.merge(df1,df2,on='city')
@@ -130,6 +129,32 @@ def map(this_month):
 
     map = map_visualmap(df_province)
     make_snapshot(snapshot, map.render(), "map.png")
+
+def hist(this_month):
+
+    df = pd.read_csv('mid_sale.csv', usecols=[this_month], na_values='na').dropna()
+
+    num_bins = 100
+    fig, ax = plt.subplots()
+    n, bins, patches = ax.hist(df.values, num_bins, density=1)
+    ax.set_title(this_month+"住宅价格直方图")
+    ax.set_xlabel('价格')
+    ax.set_ylabel('分布密度')
+    fig.savefig('hist.png', transparent=False, dpi=80, bbox_inches="tight")
+
+def box():
+
+    df = pd.read_csv('286sale.csv')
+
+    fig, ax = plt.subplots()
+    ax.set_title('近两年住宅价格箱线图')
+    df.iloc[:,-24:].boxplot(sym='.')
+    labels = ax.get_xticklabels()
+    plt.setp(labels, rotation=90)
+    fig.savefig('box.png', transparent=False, dpi=80, bbox_inches="tight")
+
+
+
 
 
 

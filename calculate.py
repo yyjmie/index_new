@@ -72,16 +72,17 @@ def index_calculate(last_month, same_month, this_month):
     result['y_on_y'] = result[this_month]/result[same_month]-1
     sorted = result.loc[:, ['city', 'y_on_y']].sort_values(by='y_on_y', ascending=False)
     top10 = sorted.head(10)
+    print(top10)
     top10.y_on_y = top10.y_on_y.apply(lambda x: '{:.2%}'.format(x))
-    bottom10 = sorted.tail(10)
+    bottom10 = sorted.tail(10).sort_values(by='y_on_y', ascending=True)
     bottom10.y_on_y = bottom10.y_on_y.apply(lambda x: '{:.2%}'.format(x))
     
     # save
     sorted.to_csv("rate_new.csv", index=False)
     top10.to_csv("r_top10.csv", index=False)
-    bottom10.sort_values(by='y_on_y', ascending=False).to_csv("r_bottom10.csv", index=False)
+    bottom10.to_csv("r_bottom10.csv", index=False)
 
-   # 计算百城投资收益指数
+    # 计算百城投资收益指数
     df_index = pd.read_csv('index_change.csv',index_col=['date'])
     last_month_index = df_index.at[last_month,'index']
     same_month_index = df_index.at[same_month,'index']

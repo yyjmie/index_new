@@ -30,7 +30,3 @@ def preprocess(from_file, to_file, this_month):
 	if from_file == 'mid_rent.csv':
 		df = df.fillna(0)
 	df.to_csv(to_file, index = False)
-
-
-
-
